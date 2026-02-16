@@ -1,17 +1,43 @@
-# RobinBoard
+﻿# RobinBoard
 
-RobinBoard is a school digital signage system:
-- Public display (`/#/`)
-- Admin login (`/#/admin`)
-- Admin dashboard (`/#/admin/dashboard`)
+RobinBoard, okul ekranları için hazırlanmış canlı bir dijital pano sistemidir.
 
-## Tech Stack
-- Frontend: React + Vite + Tailwind
+- `/#/` : Genel görüntüleme ekranı
+- `/#/admin` : Yönetici giriş ekranı
+- `/#/admin/dashboard` : Yönetim paneli
+
+## Öne Çıkan Özellikler
+
+- Canlı ekran akışı (hava durumu, zil durumu, ders programı, duyurular)
+- Medya yönetimi (görsel/video yükleme, başlık düzenleme, silme)
+- Nöbet çizelgesi ve haftalık yer döngüsü
+- Öğrenci listesi ve doğum günü bildirimleri
+- Socket.IO ile anlık güncellemeler (`settingsChanged`, `scheduleChanged`, `mediaChanged`)
+
+## Teknoloji Yığını
+
+- Frontend: React + Vite + TailwindCSS
 - Backend: Flask + Flask-SocketIO
-- Database: MongoDB
+- Veritabanı: MongoDB (Atlas veya harici sunucu)
+- Deploy: Docker + Docker Compose + Nginx Proxy Manager
 
-## Local Development
+## Proje Yapısı
+
+```text
+frontend/                 React uygulaması
+  src/pages/              Display, Login, Admin sayfaları
+  src/components/admin/   Yönetim sekmeleri
+backend/                  Flask API + Socket.IO
+  routes/                 auth.py, api.py
+  db.py                   varsayılan ayarlar + Mongo bağlantısı
+  static/uploads/         medya dosyaları
+deploy/nginx/             örnek reverse proxy config
+```
+
+## Hızlı Başlangıç (Local)
+
 ### 1) Backend
+
 ```bash
 cd backend
 pip install -r requirements.txt
@@ -19,53 +45,55 @@ python app.py
 ```
 
 ### 2) Frontend
+
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-Vite proxies `/api`, `/socket.io`, and `/static/uploads` to `http://localhost:5000`.
+Vite, `/api`, `/socket.io` ve `/static/uploads` isteklerini `http://localhost:5000` adresine proxy eder.
 
-## Docker Production (VPS)
-This repo now includes:
-- `Dockerfile` (multi-stage: frontend build + Python runtime)
-- `docker-compose.prod.yml` (app container; MongoDB expected via Atlas/remote URI)
-- `.env.production.example` (compose environment template)
-- `deploy/nginx/robinboard.conf` (reverse proxy sample with WebSocket support)
+## Production (Docker / VPS)
 
-### 1) Prepare environment
+### 1) Ortam dosyası
+
 ```bash
 cp .env.production.example .env
 ```
-Set:
-- `MONGO_URI` (MongoDB Atlas connection string)
+
+Doldurulması gereken alanlar:
+
+- `MONGO_URI`
 - `SECRET_KEY`
 - `ADMIN_PASSWORD`
-- `CORS_ORIGINS` (your HTTPS domain)
-- `APP_PORT` (host port, default `3390`)
-- `SESSION_COOKIE_SECURE` (`true` behind HTTPS proxy, `false` for direct HTTP access)
+- `CORS_ORIGINS` (örn: `https://board.rob1n.dev`)
+- `APP_PORT` (varsayılan: `3390`)
+- `SESSION_COOKIE_SECURE` (`true`: HTTPS proxy arkasında, `false`: direkt HTTP test)
 
-### 2) Deploy
+### 2) Yayına alma
+
 ```bash
-docker compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.prod.yml --env-file .env up -d --build
 ```
 
-### 3) Operate
+### 3) Operasyon
+
 ```bash
 docker compose -f docker-compose.prod.yml ps
 docker compose -f docker-compose.prod.yml logs -f app
 docker compose -f docker-compose.prod.yml restart app
 ```
 
-### 4) Update
+## Güvenlik Notları
+
+- `backend/.env` dosyasını repoya eklemeyin.
+- Medya ve veri yedekleri için düzenli backup alın.
+- Üretimde güçlü `ADMIN_PASSWORD` ve uzun rastgele `SECRET_KEY` kullanın.
+
+## Güncelleme Akışı
+
 ```bash
 git pull
-docker compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.prod.yml --env-file .env up -d --build
 ```
-
-## Notes
-- The app is served on port `5000` inside the container.
-- Host port is controlled by `APP_PORT` in `.env` (default `3390`).
-- Use Nginx/Caddy in front for HTTPS termination and domain routing.
-- WebSocket upgrade headers are required for Socket.IO (included in the sample Nginx config).
