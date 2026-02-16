@@ -1,40 +1,60 @@
-﻿# RobinBoard
-
-RobinBoard, okul ekranları için hazırlanmış canlı bir dijital pano sistemidir.
-
-- `/#/` : Genel görüntüleme ekranı
-- `/#/admin` : Yönetici giriş ekranı
-- `/#/admin/dashboard` : Yönetim paneli
-
-## Öne Çıkan Özellikler
-
-- Canlı ekran akışı (hava durumu, zil durumu, ders programı, duyurular)
-- Medya yönetimi (görsel/video yükleme, başlık düzenleme, silme)
-- Nöbet çizelgesi ve haftalık yer döngüsü
-- Öğrenci listesi ve doğum günü bildirimleri
-- Socket.IO ile anlık güncellemeler (`settingsChanged`, `scheduleChanged`, `mediaChanged`)
-
-## Teknoloji Yığını
-
-- Frontend: React + Vite + TailwindCSS
-- Backend: Flask + Flask-SocketIO
-- Veritabanı: MongoDB (Atlas veya harici sunucu)
-- Deploy: Docker + Docker Compose + Nginx Proxy Manager
-
-## Proje Yapısı
+﻿# 🚀 RobinBoard
 
 ```text
-frontend/                 React uygulaması
-  src/pages/              Display, Login, Admin sayfaları
-  src/components/admin/   Yönetim sekmeleri
-backend/                  Flask API + Socket.IO
-  routes/                 auth.py, api.py
-  db.py                   varsayılan ayarlar + Mongo bağlantısı
-  static/uploads/         medya dosyaları
-deploy/nginx/             örnek reverse proxy config
+██████╗  ██████╗ ██████╗ ██╗███╗   ██╗██████╗  ██████╗  █████╗ ██████╗ ██████╗
+██╔══██╗██╔═══██╗██╔══██╗██║████╗  ██║██╔══██╗██╔═══██╗██╔══██╗██╔══██╗██╔══██╗
+██████╔╝██║   ██║██████╔╝██║██╔██╗ ██║██████╔╝██║   ██║███████║██████╔╝██║  ██║
+██╔══██╗██║   ██║██╔══██╗██║██║╚██╗██║██╔══██╗██║   ██║██╔══██║██╔══██╗██║  ██║
+██║  ██║╚██████╔╝██████╔╝██║██║ ╚████║██████╔╝╚██████╔╝██║  ██║██║  ██║██████╔╝
+╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚═╝╚═╝  ╚═══╝╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝
 ```
 
-## Hızlı Başlangıç (Local)
+🎓 **RobinBoard**: okul ekranları için canlı dijital pano sistemi.
+
+- 🖥️ `/#/` → Görüntüleme ekranı
+- 🔐 `/#/admin` → Yönetici giriş
+- ⚙️ `/#/admin/dashboard` → Yönetim paneli
+
+---
+
+## ✨ Neler Var?
+
+- 🌤️ Hava durumu, saat/tarih, anlık durum paneli
+- 📣 Kayan duyuru bandı
+- 🎬 Medya yönetimi (görsel/video + altyazı)
+- 👩‍🏫 Nöbet çizelgesi + haftalık yer döngüsü
+- 📚 Ders programı + zil saatleri
+- 🎂 Doğum günü listesi (Cuma günleri hafta sonu ön izlemesi)
+- ⚡ Socket.IO ile anlık güncelleme (`settingsChanged`, `scheduleChanged`, `mediaChanged`)
+
+---
+
+## 🧱 Tech Stack
+
+- **Frontend**: React + Vite + TailwindCSS
+- **Backend**: Flask + Flask-SocketIO
+- **Database**: MongoDB (Atlas önerilir)
+- **Deploy**: Docker + Docker Compose + Nginx Proxy Manager
+
+---
+
+## 📁 Proje Yapısı
+
+```text
+frontend/
+  src/pages/                Display, Login, Admin
+  src/components/           ortak bileşenler
+  src/components/admin/     admin sekmeleri
+backend/
+  routes/                   auth.py, api.py
+  db.py                     Mongo bağlantısı + varsayılan şema
+  static/uploads/           yüklenen medya
+deploy/nginx/               reverse proxy örneği
+```
+
+---
+
+## 🧪 Local Development
 
 ### 1) Backend
 
@@ -52,29 +72,92 @@ npm install
 npm run dev
 ```
 
-Vite, `/api`, `/socket.io` ve `/static/uploads` isteklerini `http://localhost:5000` adresine proxy eder.
+Vite proxy:
+- `/api`
+- `/socket.io`
+- `/static/uploads`
+→ `http://localhost:5000`
 
-## Production (Docker / VPS)
+---
 
-### 1) Ortam dosyası
+## 🔑 Environment Variables
 
-```bash
-cp .env.production.example .env
+### `backend/.env` (local)
+
+```env
+MONGO_URI=mongodb://127.0.0.1:27017/RobinBoardDB
+SECRET_KEY=replace-with-a-long-random-string
+ADMIN_PASSWORD=replace-with-strong-password
+CORS_ORIGINS=http://localhost:5000,http://127.0.0.1:5000,http://localhost:5173,http://127.0.0.1:5173
+SESSION_COOKIE_SECURE=false
 ```
 
-Doldurulması gereken alanlar:
+### `.env` (production, compose)
 
-- `MONGO_URI`
-- `SECRET_KEY`
-- `ADMIN_PASSWORD`
-- `CORS_ORIGINS` (örn: `https://board.rob1n.dev`)
-- `APP_PORT` (varsayılan: `3390`)
-- `SESSION_COOKIE_SECURE` (`true`: HTTPS proxy arkasında, `false`: direkt HTTP test)
+`cp .env.production.example .env`
 
-### 2) Yayına alma
+```env
+MONGO_URI=mongodb+srv://<username>:<password>@<cluster-url>/RobinBoardDB?retryWrites=true&w=majority&appName=Cluster0
+SECRET_KEY=replace-with-very-long-random-secret
+ADMIN_PASSWORD=replace-with-strong-admin-password
+CORS_ORIGINS=https://your-domain.com
+APP_PORT=3390
+SESSION_COOKIE_SECURE=false
+```
+
+---
+
+## 🌐 API Endpoints
+
+### Auth
+- `POST /api/auth/login`
+- `POST /api/auth/logout`
+- `GET /api/auth/status`
+
+### Core
+- `GET /api/settings`
+- `POST /api/settings/update`
+- `GET /api/weather`
+- `GET /api/schedule/get`
+- `POST /api/schedule/update`
+
+### Students
+- `GET /api/students` (admin)
+- `POST /api/students` (admin)
+- `DELETE /api/students` (admin)
+- `DELETE /api/students/<student_id>` (admin)
+- `GET /api/birthdays/today`
+
+### Media
+- `GET /api/files`
+- `POST /api/upload` (admin)
+- `POST /api/files/update` (admin)
+- `POST /api/files/delete` (admin)
+
+---
+
+## ⚡ Realtime Events
+
+- `settingsChanged`
+- `scheduleChanged`
+- `mediaChanged`
+
+`mediaChanged` ile Display tarafı upload/update/delete sonrası medyayı anında yeniler.
+
+---
+
+## 🐳 Production / VPS Deploy
+
+### 1) Build + Run
 
 ```bash
 docker compose -f docker-compose.prod.yml --env-file .env up -d --build
+```
+
+### 2) First-run volume permission fix
+
+```bash
+docker run --rm -v robinboard_uploads_data:/data alpine sh -c "mkdir -p /data/uploads && chown -R 10001:10001 /data && chmod -R 775 /data"
 ```
 
 ### 3) Operasyon
@@ -83,17 +166,44 @@ docker compose -f docker-compose.prod.yml --env-file .env up -d --build
 docker compose -f docker-compose.prod.yml ps
 docker compose -f docker-compose.prod.yml logs -f app
 docker compose -f docker-compose.prod.yml restart app
+docker compose -f docker-compose.prod.yml down
 ```
 
-## Güvenlik Notları
+### 4) Uygulama URL
 
-- `backend/.env` dosyasını repoya eklemeyin.
-- Medya ve veri yedekleri için düzenli backup alın.
-- Üretimde güçlü `ADMIN_PASSWORD` ve uzun rastgele `SECRET_KEY` kullanın.
+- `http://YOUR_SERVER_IP:3390/#/`
+- `http://YOUR_SERVER_IP:3390/#/admin`
 
-## Güncelleme Akışı
+---
+
+## 🧯 Troubleshooting
+
+- **Port dolu**: `.env` içindeki `APP_PORT` değiştir.
+- **Session çalışmıyor**:
+  - Domain+HTTPS: `SESSION_COOKIE_SECURE=true`
+  - Direkt IP+HTTP: `SESSION_COOKIE_SECURE=false`
+- **Atlas bağlantı hatası**: kullanıcı/şifre + IP whitelist kontrol et.
+- **Eski frontend bundle yükleniyor**: `docker compose build --no-cache` + hard refresh (`Ctrl+F5`).
+
+---
+
+## 🔐 Security Notes
+
+- `backend/.env` dosyasını repoya koyma.
+- Güçlü `ADMIN_PASSWORD` ve uzun `SECRET_KEY` kullan.
+- Prod’da HTTPS reverse proxy (NPM/Nginx/Caddy) kullan.
+
+---
+
+## 🛠️ Update Flow
 
 ```bash
 git pull
 docker compose -f docker-compose.prod.yml --env-file .env up -d --build
 ```
+
+---
+
+## 👨‍💻 Author
+
+Made with ☕ + 💚 by **rob1n.dev**
