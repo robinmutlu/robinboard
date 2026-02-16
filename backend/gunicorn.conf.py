@@ -1,0 +1,9 @@
+bind = "0.0.0.0:5000"
+worker_class = "eventlet"
+workers = 1
+timeout = 120
+graceful_timeout = 30
+keepalive = 20
+accesslog = "-"
+errorlog = "-"
+loglevel = "info"

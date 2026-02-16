@@ -1,0 +1,20 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: robinboard:latest
+    restart: unless-stopped
+    environment:
+      MONGO_URI: ${MONGO_URI}
+      SECRET_KEY: ${SECRET_KEY}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      CORS_ORIGINS: ${CORS_ORIGINS:-https://your-domain.com}
+      SESSION_COOKIE_SECURE: ${SESSION_COOKIE_SECURE:-false}
+    ports:
+      - "0.0.0.0:${APP_PORT:-3390}:5000"
+    volumes:
+      - uploads_data:/app/backend/static
+
+volumes:
+  uploads_data:

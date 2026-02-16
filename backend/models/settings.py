@@ -1,0 +1,1 @@
+# Veritabani ayarlari ve semalar burada olacak
